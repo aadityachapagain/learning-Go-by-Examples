@@ -99,3 +99,70 @@ Amazing !  Now lets learn about datatypes in go lang
 ### Number, String and Boolean
 
 ---------------
+
+The string type stores a sequence of bytes. It is represented and decleared with keyword `string`.
+
+A boolean value is stored using the keyword bool.  
+
+Go also supports complex number type data tyeps, which can be declared with `complex64` and `complex128`.
+
+```go
+var a bool = true
+var b int = 1
+var c string = 'salut que de neuf'
+var d float32 = 1.2222
+var x complex128 = complex.Sqrt(-5 + 12i)
+
+```
+
+### Arrays, Slices and Maps
+
+---------------
+
+An array is a sequence of elements of the same data type. Arrays have a fixed length dfined at declaration, so it cannot be expanded more than that. An array is declared as:
+
+```go
+var a [5] int
+```
+
+Arrays can also multidimensional.We can simply create them with the following format:
+
+```go
+var b [5][1] int
+```
+
+Arrays are limiting for cases when the values of array changes in runtime.Arrays also do not provide the ability to get a subarray.For this,Go has a data type called slices.
+
+Slices store a sequence of elements and can be expanded at any time.Slice declaration is similar to the array declaration - without the capacity defined.
+
+```go
+var b [] int
+```
+
+This creates a slice with zero capacity and zero length. Slice can also be defined with capacity and length. we can use following syntax for it:
+
+```go
+numbers := make([] int , 5, 10)
+```
+
+Here, the slice has an initial length of 5 and has a capacity of 10.
+
+Slice are an abstraction to an array. Slice use an array as an underlying structure. A slice contains  three components: capacity, length, and a pointer to the underlying array as shown in the diagram below:  
+  
+
+![Slice as a array](https://cdn-images-1.medium.com/max/800/1*P0lNCO0sQwIYHLEX_mfSOQ.png)
+
+The capacity of slice can be increased by using the append or a copy function. An append function adds value to the end of the array and also increses the capacity if needed.
+
+```go
+numbers =  append(numbers, 1, 2, 3, 4)
+```
+
+Another way to increase the capacity of a slice is to use the copy function.Simply create another slice with a larger capacity and copy the original slice to the newly created slice:
+
+```go
+// create a new slice
+number2 := make([] int, 15)
+// copy the original slice to new slice
+copy(number2, number)
+```
