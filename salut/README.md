@@ -166,3 +166,56 @@ number2 := make([] int, 15)
 // copy the original slice to new slice
 copy(number2, number)
 ```
+
+We can create a sub-slice of a slice. This can be done simply using the following command:
+
+```go
+// initialize the slice with 5 length
+var a  = []int(1,2,3,4,5)
+fmt.Println(a)
+// create the slice from existing array
+var b = a[2:]
+fmt.Println(b)
+b := a[1:4]
+fmt.Println(b)
+```
+
+Maps are data type in Go, which maps keys to values. We can define a map using following syantax:
+
+```go
+var m map[string]int
+```
+
+Here `m` is the new map variable, which has its key as `string` and values as `integers`.  
+we can add keys and values to the map easily using following syntax:
+
+```go
+// adding keys and values to the map variable
+
+m['is'] = 2
+m['need'] = 5
+m['you'] = 4
+m['attention'] = 1
+m['all'] = 3
+// printing the values 
+fmt.Println(m['attention'])
+fmt.Println(m['need'])
+```
+  
+### TypeCasting
+
+---------------
+
+Unlike the dynamically typed language like python, javascript. Typecast is very important api for statically typed language and used in every daily lives while using statically typed programming language.  
+
+Using typecast we cant convert one data type to another. Let's see simple data type conversion:
+
+```go
+a := 1.1
+b := int(a)
+fmt.Println(b)
+```
+ **caution**: Not all types of data type can be converted to another type. Make sure that the data type is compatible with the conversion.
+
+<p style="text-align: center;">la Francis</p>
+<p style="text-align: center;">Je vous remercie </p>
