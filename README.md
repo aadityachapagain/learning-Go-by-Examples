@@ -13,3 +13,5 @@ I will give name of each lesson of the day to each French word. So, that it will
 1. Lesson 1  [[Bonjour]](https://github.com/aadityachapagain/learning-Go-by-Examples/tree/master/Bonjour)
   
 2. Lesson 2  [[salut]](https://github.com/aadityachapagain/learning-Go-by-Examples/tree/master/salut)
+  
+3. Lesson 3 [[S'il vous plaît]](https://github.com/aadityachapagain/learning-Go-by-Examples/tree/master/s'il%20vous%20plait)
