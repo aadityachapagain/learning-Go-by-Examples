@@ -206,3 +206,63 @@ func main() {
 As we can see in the above example, the method now can be called using a dot operator as `pp.describe`. Note that the receiver is a pointer. With the pointer we are passing a reference to the value, so if we make any changes in the method it will be reflected in the receiver pp. It also does not create a new copy of the object, which saves memory.
 
 Note that in the above example the value of age is changed, whereas the value of name is not changed because the method setName is of the receiver type whereas setAge is of type pointer.
+
+### Interfaces
+
+-------------------
+
+Go interfaces are collection of methods. Interfaces help group together the properties of a type.Lets take an example of interface animal:
+
+```go
+type animal interface {
+  description() string
+}
+
+```
+
+Here animal is an interface type. Now let’s create 2 different type of animals which implement the animal interface type:
+
+```go
+
+package main
+
+import (
+  "fmt"
+)
+
+type animal interface {
+  description() string
+}
+
+type cat struct {
+  Type  string
+  Sound string
+}
+
+type snake struct {
+  Type      string
+  Poisonous bool
+}
+
+func (s snake) description() string {
+  return fmt.Sprintf("Poisonous: %v", s.Poisonous)
+}
+
+func (c cat) description() string {
+  return fmt.Sprintf("Sound: %v", c.Sound)
+}
+
+func main() {
+  var a animal
+  a = snake{Poisonous: true}
+  fmt.Println(a.description())
+  a = cat{Sound: "Meow!!!"}
+  fmt.Println(a.description())
+}
+
+//=> Poisonous: true
+//=> Sound: Meow!!!
+
+```
+
+In the main function, we create a variable a of type animal. We assign a snake and a cat type to the animal and use Println to print a.description. Since we have implemented the method describe in both of the types (cat and snake) in a different way we get the description of the animal printed.
