@@ -25,6 +25,18 @@ func add(a int, b int) int {
 	return c
 }
 
+// method defination
+func (p *Person) describe() {
+	fmt.Printf("%v is %v years old.", p.name, p.age)
+}
+func (p *Person) setAge(age int) {
+	p.age = age
+}
+
+func (p Person) setName(name string) {
+	p.name = name
+}
+
 func main() {
 	i := 2
 	// increment the value of i using defined function
@@ -40,4 +52,14 @@ func main() {
 	// bob = Person("Sponge Bob", 24, "Male")
 
 	fmt.Println(bob.name, bob.age, bob.gender)
+
+	pp := &Person{name: "Bob the swimmer", age: 42, gender: "Male"}
+	pp.describe()
+	// => Bob is 42 years old
+	pp.setAge(45)
+	fmt.Println(pp.age)
+	//=> 45
+	pp.setName("Hari")
+	fmt.Println(pp.name)
+	//=> Bob the swimmer
 }
