@@ -89,3 +89,79 @@ Here we can now import the package person we created and use the function Descri
 
 -------------------------
 
+Go has built in support for documentation for packages. Run the following command to generate documentation:
+
+```bash
+
+godoc person Description
+
+```
+
+This will generate the Documentation for Description function inside our person packages. To see documentation run a webserver using the following command:
+
+```bash
+
+godoc -http=":8080"
+
+```
+
+Now go to the URL http://localhost:8080/pkg/ and see the documentation of the package we just created.
+
+### Some built-in Go packages
+
+-------------------------
+
+#### fmt
+
+The packages implement I/O operations and functions. We have already used the packages for printing out to stdout.
+
+#### json
+
+Another useful package in Go is the json package. This helps to encode/decode the JSON. Let’s take an example to encode/decode some json:
+
+#### Encode
+
+```go
+
+package main
+
+import (
+  "fmt"
+  "encoding/json"
+)
+
+func main(){
+  mapA := map[string]int{"apple": 5, "lettuce": 7}
+  mapB, _ := json.Marshal(mapA)
+  fmt.Println(string(mapB))
+}
+
+
+```
+
+#### Decode
+
+```go
+
+package main
+
+import (
+  "fmt"
+  "encoding/json"
+)
+
+type response struct {
+  PageNumber int `json:"page"`
+  Fruits []string `json:"fruits"`
+}
+
+func main(){
+  str := `{"page": 1, "fruits": ["apple", "peach"]}`
+  res := response{}
+  json.Unmarshal([]byte(str), &res)
+  fmt.Println(res.PageNumber)
+}
+```
+
+While decoding the json byte using unmarshal, the first argument is the json byte and the second argument is the address of the response type struct where we want the json to be mapped to. Note that the json:”page” maps page key to PageNumber key in the struct.
+
