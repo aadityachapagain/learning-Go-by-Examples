@@ -1,4 +1,4 @@
-# GO Basiscs
+# GO Basics
 
 This part of the go programming tutorial series covers GO packages, many go packages, more go packages, custom packages, Packages Documentation, Error handling, Custom error, Panic and Defer.
 
