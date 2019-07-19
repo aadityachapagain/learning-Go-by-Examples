@@ -19,3 +19,5 @@ I will give name of each lesson of the day to each French word. So, that it will
 4. Lesson 4 [[Amour]](https://github.com/aadityachapagain/learning-Go-by-Examples/tree/master/Amour)
 
 5. Lesson 5 [[Bonheur]](https://github.com/aadityachapagain/learning-Go-by-Examples/tree/master/Bonheur)
+
+6. Lesson 6[[Parallele]](https://github.com/aadityachapagain/learning-Go-by-Examples/tree/master/Parallele)
