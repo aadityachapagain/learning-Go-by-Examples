@@ -1,3 +1,6 @@
 /src
 /bin
 /pkg
+
+# static files
+*.svg
