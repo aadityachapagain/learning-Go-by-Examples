@@ -4,3 +4,6 @@
 
 # static files
 *.svg
+*.png
+*.PNG
+
