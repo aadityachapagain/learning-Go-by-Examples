@@ -10,7 +10,7 @@ import (
 )
 
 //!+parseAndCheck
-import "LearnGo/cho5/eval"
+import "gopl.io/ch7/eval"
 
 //!-parseAndCheck
 
