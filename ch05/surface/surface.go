@@ -10,7 +10,7 @@ import (
 )
 
 //!+parseAndCheck
-import "gopl.io/ch7/eval"
+import "ch05/eval"
 
 //!-parseAndCheck
 
