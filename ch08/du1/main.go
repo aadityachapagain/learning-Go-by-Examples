@@ -1,4 +1,4 @@
-// The du2 command computes the disk usage of the files in a directory.
+// The du1 command computes the disk usage of the files in a directory.
 package main
 
 // The du2 variant uses select and a time.Ticker
