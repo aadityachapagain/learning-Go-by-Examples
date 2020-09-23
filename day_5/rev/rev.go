@@ -1,5 +1,5 @@
 // reverse reverses a slice of ints in place
-
+// This is possible because slice store pointer to the element rather than value
 package main
 
 import (
