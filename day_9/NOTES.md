@@ -51,3 +51,40 @@ p := Point{1,2}
 (&p).ScaleBy(1,2)
 fmt.Println(p)
 ```
+
+- Composing Types by struct embedding: Consider the type ColoredPoint:
+
+```go
+import "image/color"
+
+type Point struct{X, Y float64}
+
+type ColoredPoint struct {
+  Point
+  Color color.RGBA
+}
+```
+
+and previously we see that embedding let us take a syntatic shortcut to defining a ColoredPoint that contains all the fields of Point, plus some more. A similar mechanism applies to the methods of Point. We can call methods of the embedded Point field using a receiver of type ColoredPoint, even though ColoredPoint have no declared methods:
+
+```go
+red := color.RGBA{255,0,0,255}
+blue := color.RGBA{0,0,255,255}
+var p = ColoredPoint{Point{1, 1}, red}
+var q = ColoredPoint{Point{5, 4}, blue}
+
+fmt.Println(p.Distance(q.Point)) // "5"
+
+p.ScaleBy(2)
+q.ScaleBy(2)
+
+fmt.Println(p.Distance(q.Point)) // "10"
+```
+
+The methods of the Point has been promoted to ColordPoint. In this way embedding allows complex types with many methods to be built up by composition of several fields, each providing few methods.
+People familiar with object-oriented programming may be tempted to view Point as a base class and ColoredPoint as a subclass or derived class. But that would be mistake. Notice the calls to Distance above.
+Distance has parameter of type Point, and q is not a Point, so although q does have an embedded field of that type, we must explictly select it.Attempting to pass q would be an error:
+`p.Distance(q) // compile error: cannot use q (ColoredPoint) as Point`
+A ColoredPoint is not a Point but it has a Point, and it has two additional methods Distance and ScaleBy promoted from Point.
+
+- Method values and expressions :
