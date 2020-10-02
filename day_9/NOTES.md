@@ -87,4 +87,36 @@ Distance has parameter of type Point, and q is not a Point, so although q does h
 `p.Distance(q) // compile error: cannot use q (ColoredPoint) as Point`
 A ColoredPoint is not a Point but it has a Point, and it has two additional methods Distance and ScaleBy promoted from Point.
 
-- Method values and expressions :
+- Method values and expressions : Usually we select and call method in the same expressions as in p.Distance(), but it's possible to separate these two operations. The selector p.Distance yields a method value, a function that binds a method (Point.Distance) to a specific receiver value p. This function then be invoked without receiver value; it needs only non-receiver arguments.
+
+```go
+p := Point{1,2}
+q := Point{4, 6}
+
+distanceFromP := p.Distance
+fmt.Println(distanceFromP(q))
+var origin Point
+fmt.Println(distanceFromP(origin))
+
+scaleP := p.ScaleBy
+
+scaleP(2) // p becomes (2, 4)
+scaleP(3) //           (6, 12)
+scale(10) //           (60, 120)
+```
+
+Related to the method value in the method expression. When calling a method, as opposed to an ordinary function, we must supply receiver in a special way using the selector syntax, A method expression, written T.f where T is a type, yields a function, value with a regular first parameter, taking, the place of the receiver, so it can be called in the usual way.
+
+```go
+p := Point{1,2}
+q := Point{2,3}
+
+distance := Point.Distance   //method expression
+fmt.Println(distance(p,q))
+fmt.Printf("%T\n", distance)
+
+scale := Point.ScaleBy
+scale(&q, 2)
+fmt.Println(p)
+fmt.Printf("%T\n", scale)
+```
