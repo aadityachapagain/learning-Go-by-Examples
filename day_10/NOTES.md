@@ -48,3 +48,39 @@ var rwc io.ReadWriterCloser
 rwc = os.Stdout            // OK : OK: *os.File has Read, Write, Close methods
 rwc = new(bytes.Buffer) // compile error: *bytes.Buffer lacks Close method
 ```
+
+- Parsing flags with flags.Value : flag.Value is another standard interface, which helps us define new notations for command-line flags.
+
+- Sorting with sort.Interface : the sort package provides in-place sorting of any sequence according to any ordering function. It's design is rather unusual. In many other languages, the sorting algorithms is associated with sequence data type, while ordering function is associated with type of the elements. By contrast, Go's sort.Sort function assumes nothing about the representation of either sequence or its elements. Instead it uses an interface, sort.Interface, to specify contract between generic sorting algorithm and each sequence type that may be sorted.
+
+  An in-place sort algorithm needs three things, the length of the sequence, a means of comparing two elements, and a way to swap two elements - so they are the methods of sort.Interface.
+
+```go
+package sort
+
+type Interface interface {
+  Len() int
+  Less(i, j int) bool   // i, j are indices of sequence elements.
+  Swap(i,j int)
+}
+```
+
+To sort any sequence, we need to define a type that implements these three methods, then apply `sort.Sort` to an instance of that type.Consider sorting of slice of strings.
+
+```go
+type StringSlice []string
+
+func (p StringSlice) Len() int { return len(p)}
+func (p StringSlice) Less(i,j int) bool {  return p[i] < p[j] }
+func (p StringSlice) Swap(i , j int) { p[i], p[j] = p[j], p[i] }
+```
+
+Now we can sort a slice of strings, names, by converting the slice to a StringSlice like this:
+
+```go
+sort.Sort(StringSlice(names))
+```
+
+Sorting a slice strings is so common that, the sort package provides the StringSlice type, as well as a function called Strings so that the call above can be simplified to sort.Strings(names).
+
+Http.Handler Interface:
