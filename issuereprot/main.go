@@ -61,3 +61,8 @@ func noMust() {
 		log.Fatal(err)
 	}
 }
+
+/*
+//!+output
+$ go build gopl.io/ch4/issuesreport
+$ ./issuesreport repo:golang/go is:open json decoder
