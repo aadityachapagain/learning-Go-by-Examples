@@ -83,4 +83,49 @@ sort.Sort(StringSlice(names))
 
 Sorting a slice strings is so common that, the sort package provides the StringSlice type, as well as a function called Strings so that the call above can be simplified to sort.Strings(names).
 
-Http.Handler Interface:
+Http.Handler Interface: Lets look closely at the server API, whose foundation is the http.Handler interface:
+
+```go
+package http
+
+type Handler interface {
+  ServeHTTP(w ResponseWriter, r *Request)
+}
+
+func ListenAndServe(address string, h Handler) error
+```
+
+The `ListenAndServe` function need a server address, like `localhost:8000` and an instance of Handler interface to which all requests should be dispatched. It runs forever, or until the server fails ( or fails to start ) with an error, always non-nil, which it returns.
+
+- Error Interface: we've have been using and creating values of mysterious predeclared error type from beginning without seeing what it really is.Infact its just a interface type with a single method that returns an error message :
+
+```go
+type error interface {
+  Error() string
+}
+```
+
+The simplest way to create an error is by calling `errors.New`, which returns a new error for a given error message. The entire errors package is only four lines long:
+
+```go
+package errors
+
+func New(text string) error { return  &errorString{text} }
+
+type errorString struct { text string }
+
+func ( e *errorString) Error() string { return e.text }
+
+```
+
+Calls to `erros.New` are relatively infrequent because there's convenient wrapper function, `fmt.Errorf`, that does string formatting too.We used it several times in Chapter 5.
+
+```go
+package fmt
+
+import "errors"
+
+func Errorf(format string, args ...interface{}) error {
+  return errors.New(Sprintf(format, args...))
+}
+```
