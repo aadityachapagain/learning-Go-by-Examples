@@ -35,3 +35,52 @@ b, ok := w.(*bytes.Buffer)         // failure: !ok, b == nil
 ```
 
 The second result is conventionally assigned to a variable named ok. If the operation failed, ok is false, and the first result is equal to the zero value of the asserted type, which in this example is a nil \*bytes.Buffer.
+
+- Querying Behaviors with Interface Type Assertions: Lets consider a example of web server, where web app is responsible for writing HTTP header, fields such as "Content-type: text/html". The io.Writer w represents the HTTP response; the bytes written to it are ultimately sent to someone's web browser.
+
+```go
+func writeHeader(w io.Writer, contentType string) error {
+  if _, error := w.Write([]byte("Content-Type: ")); err != nil{
+    return err
+  }
+  if _, error := w.Write([]byte(contentType)); err != nil {
+    return err
+  }
+  // ...
+}
+```
+
+Because the Write method requires a byte slice, and the value we wish to write is a String, a []byte(...) conversion is required. This conversion allocates memory and makes a copy, but the copy is thrown away almost immediately.So, lets pretend that this is core part of the web server and that our profiling has revealed that this memory allocation is slowing it down.Can we avoid allocating memory here ?
+
+The `io.Writer` interface tells us only one fact about the concrete type that w holds: that bytes may be written to it. If we look behind the curtains of the net/http package, we see that the dynamic type that w holds in this program also has a WriteString method that allows strings to be efficiently written to it, avoiding the need to allocate the temporary copy.
+
+We cannot assume that an arbitrary io.Writer w has the WriteString method. But we can define a new interface that has just this method and use a type assertion to test whether the dynamic type of w satisfies this new interface.
+
+```go
+
+// writeString writes s to w
+// if w has a WriteString method, it is invoked instead of w.Write.
+
+func writeString(w io.Writer, s string) (n int, err error) {
+  type stringWriter interface {
+    WriteString(string) (n int, err error)
+  }
+  if sw, ok := w.(stringWriter); ok {
+    return sw.WriteString(s)  //avoid a copy
+  }
+  return w.Write([]bytes(s))  //allocate a temporary memory
+}
+
+func writeHeader(w io.Writer, contentType string) error {
+  if _, error := writeString([]byte("Content-Type: ")); err != nil{
+    return err
+  }
+  if _, error := writeString([]byte(contentType)); err != nil {
+    return err
+  }
+  // ...
+}
+
+```
+
+what most exciting thing about above example is that there is no standard interface that defines the `WriteString` method and specifies it required behaviour, Furthermore, whether or not a concrete type satisfies the `stringWriter` interface is determined only by its method, not by any declared relationship between it and the interface type. What this means is that the technique above relies on the assumption that if a type satisfies the interface below, then `WriteString(s)` must have the same effect as `Write([]bytes(s))`.
