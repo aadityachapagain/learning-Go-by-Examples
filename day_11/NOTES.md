@@ -84,3 +84,86 @@ func writeHeader(w io.Writer, contentType string) error {
 ```
 
 what most exciting thing about above example is that there is no standard interface that defines the `WriteString` method and specifies it required behaviour, Furthermore, whether or not a concrete type satisfies the `stringWriter` interface is determined only by its method, not by any declared relationship between it and the interface type. What this means is that the technique above relies on the assumption that if a type satisfies the interface below, then `WriteString(s)` must have the same effect as `Write([]bytes(s))`.
+
+- Type Switches: Interfaces are used in two distinct styles. First style, exemplified by `io.Reader`, `io.Writer`, `fmt.Stringer`, `sort.Interface`, `http.Handler`, and `error` an interface's methods express the similarities of the concrete types that satisfy the interface but hide the representation details and intrinsic operations of those concrete types. The emphasis is on the methods, not on the concrete types.
+
+The second style exploits the ability of an interface value to hold values of a variety of concrete types and considers the interface to be the union of those types. Type assertions are used to discriminate among these types dynamically and treat each case differently. In this style, the emphasis is on concrete types that satisfy the interface, not on the interface's methods, and there is no hiding of information.
+
+Consider example of Go's API for querying an SQL database , like those of other language.
+
+```go
+import "database/sql"
+func listTracks(db sql.DB, artist string, minYear, maxYear int) {
+  result , err := db.Exec(
+    "SELECT * FROM tracks WHERE artist  = ? AND ? <= year AND <= ?",artist, minYear, maxYear
+  )
+  // ...
+}
+```
+
+The Exec method replaces each '?' in the query string with an SQL Literal denoting the corresponding argument value, which may be boolean, a number, string or nil. Constructing queries this way help avoid SQL injection attacks, in which an adversary takes control of the query by exploiting improper quotation of input data. Within Exec, we might find a function like the one below, which converts each argument value to its literal SQL notation.
+
+```go
+func sqlQuote(x interface{}) string {
+  if x == nil {
+    return "NULL"
+  } else if _, ok := x.(int); ok {
+    return fmt.Sprintf("%d",x)
+  } else if _, ok := x.(uint); ok {
+    return fmt.Sprintf("%d", x)
+  } else if _, ok := x.(bool); ok {
+    if b {
+      return "TRUE"
+      }
+    return "FALSE"
+  } else if s, ok := x.(string); ok{
+    return sqlQuoteString(s)
+  } else {
+  panic(fmt.Sprintf("unexpected  type %T: %v", x,x))
+  }
+}
+```
+
+Above example looks kind of messy with lots of if else chain which can be revamped into simplistic form using switch statements. A type switch looks like an ordinary statements in which the operand is x.(type) - that's literally the keyword type- and each case has one or more types. A type switch enables a multi-way branch based on the interface value's dynamic type. The nil case matches if x==nil, and the default case matches if no other case does. A type switch for sqlQuote would have these cases:
+
+```go
+
+switch x.(type) {
+  case nil:     //...
+  case int, uint:   //...
+  case bool:       // ...
+  case string:     // ...
+  default:         // ...
+}
+
+```
+
+Above in first example of type switches, we can see that string and bool require value extracted by type assertion. Since this is typical, the type switch statement has an extended form that binds the extracted value to a new variable within each case:
+
+```go
+switch x := x.(type) { /* ...*/ }
+```
+
+Here we've created new variable x which is same as input variable x;as with type assertions, reuse of variable names is common. Like a switch statement, a type switch implicitly creates a lexical block, so the declaration of the new variable called x does not conflict with a variable x in an outer block. Each case also implicitly creates a separate lexical block.
+
+Rewriting original sqlQuote function to use extended form of type switch makes code significantly clearer and manageable:
+
+```go
+func sqlQuote(x interface{}) string {
+  switch x := x.(type) {
+    case nil:
+      return "NULL"
+    case int, unit:
+      return fmt.Sprintf("%d",x)
+    case bool:
+      if x {
+        return "TRUE"
+      }
+      return "FALSE"
+    case string:
+      return sqlQuoteString(x)
+    default:
+      panic(fmt.Sprintf("unexptected type %T: %v", x,x))
+  }
+}
+```
