@@ -40,3 +40,7 @@ ch := make(chan int)          // unbuffered channel
 ch := make(chan int, 0)       // unbuffered channel
 ch := make(chan int, 3)       // buffered channel with capacity 3
 ```
+
+- Unbuffered Channel: A send operation on an unbuffered channel blocks the sending goroutine until another goroutine executes a corresponding receive on the same channel, at which point the value is transmitted and both goroutines may continue. Conversly, if receive operation is executed first then the receiving goroutines is blocked until another goroutines performs a send on the same channel.
+
+  Communication over the unbuffered channel causes the sending and receiving channel to `synchronize`.Because of this unbuffered channels often called `synchronous channel`
