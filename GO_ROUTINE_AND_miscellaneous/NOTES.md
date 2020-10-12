@@ -44,3 +44,64 @@ ch := make(chan int, 3)       // buffered channel with capacity 3
 - Unbuffered Channel: A send operation on an unbuffered channel blocks the sending goroutine until another goroutine executes a corresponding receive on the same channel, at which point the value is transmitted and both goroutines may continue. Conversly, if receive operation is executed first then the receiving goroutines is blocked until another goroutines performs a send on the same channel.
 
   Communication over the unbuffered channel causes the sending and receiving channel to `synchronize`.Because of this unbuffered channels often called `synchronous channel`
+
+- Pipelines: channels can be used to to connect goroutines together so that output of one is the input to another. This is called `pipline`. The program below consists of three goroutine connected by two channels.
+
+  the first goroutine, counter, generate the integers 0,1,2,... and sends them over a channel to the second goroutine, squarer, which receives each value, squares it, and sends the result over another channel to the third goroutine, printer, which receives the squared values and prints them. for clarity of this example, we have intentionally, chosen very simple functions, though of course they are too computationally trivial to warrant their own goroutines in a realistic program.
+
+```go
+func main(){
+naturals := make(chan int)
+squares := make(chan int)
+
+  //counter
+  go func(){
+    for x := 0; ; x++ {
+      naturals <- x
+    }
+  }()
+
+  //Squarer
+  go func(){
+    for {
+      x := <-naturals
+      squares <- x * x
+    }
+  }
+
+  //printer ( in main goroutine )
+  for {
+      fmt.Println(<- squares)
+  }
+}
+
+```
+
+The above program prints infinite series of squares, Pipelines like this may be found in long running servers where channels are used for lifelong communications between goroutines containing infinite loops. But what if we want to run finite number of loops only through pipelines ?
+
+if sender knows that no further values will ever be sent on a channel, it is useful to communicate this fact to the receiver goroutines so that they stop waiting. This can be accomplished by closing the connections using built in `close` function.
+
+```go
+close(naturals)
+```
+
+After channels has been close, any further send operation in that channels will panic. After the closed channel has been drained, that is, after the last send element has received, all subsequent receive operations will proceed without blocking but will yield a zero value.Closing the naturals channel above would cause the squarer's loop to spin as it receives a never ending stream of zero values, and to send zero values to the printer.
+
+there is no way to test directly whether a channel has been closed, but there is variant of receive operation that produces two results: the received channel element, plus a boolean value which is true for successfully receive operation and false for receive on a close and drained channel.Using this, features we can modify the squarer's loop to stop when the naturals channel is drained and close the squares channel in turn.
+
+```go
+// using boolea values
+x, ok := <- naturals
+if  !ok {
+  break
+}
+
+//using for range loop
+for x := range  naturals {
+  squares <- x * x
+}
+
+for x: range(squares){
+  fmt.Println(x)
+}
+```
