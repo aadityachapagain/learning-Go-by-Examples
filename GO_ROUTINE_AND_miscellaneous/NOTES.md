@@ -105,3 +105,36 @@ for x: range(squares){
   fmt.Println(x)
 }
 ```
+
+- Unidirectional Channel Types: It is not in the nature of channel to use it as a unidirectional way rather the our intention to use channels as unidirectional purpose by supplying channel as a function parameter.
+  To document this intent of using channels and prevent misuse, Go type system provides unidirectional channel types that expose only one or the other of the send and receive operations. The type `chan <- int`, a send-only channel of int, allows send but not receives. Conversely, the type `<-chan int`, a receive only channel of int, allows receive but not sends.Violations of this discipline are detected at compile time.
+
+- Buffered Channel: A buffered channel has queue of elements. The queue maximum size is determined during its creation, by the capacity argument to make.Below statements create a buffered channel capable of holding 3 string values.
+
+```go
+ch = make(chan string, 3)
+```
+
+A send operations in buffered channels inserts an elements at the back of the queue, and receive operation removes an element from the front .If the channel is full, the send operation blocks its send statement execution inside goroutine until space is freed by executing receive operation in that channels. Conversely, if the channel is empty, a receive operation blocks until a value is sent by another goroutine.
+
+We can send up to three values on previously defined goroutine without blocking the goroutine:
+
+```go
+ch <- "A"
+ch <- "B"
+ch <- "C"
+
+// channel is full and blocks the goroutine
+ch <- "D"
+
+//in another go routine
+fmt.Println(<- ch)  //"A"
+
+//len to return no of buffer of channel occupied by element
+fmt.Println(len(ch))  // 2
+
+//cap to determine the capacity of the channel
+fmt.Println(cap(ch))  // 3
+```
+
+We can easily get the channel capacity and length by corresponding `cap` and `len` builtin function .
