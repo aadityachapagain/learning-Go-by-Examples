@@ -2,8 +2,6 @@ package palindrome
 
 import (
   "fmt"
-  "math/rand"
-  "time"
 )
 
 import "testing"
